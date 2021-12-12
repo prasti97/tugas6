@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600&display=swap');
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: 'Nunito', sans-serif;
+        font-size: 12px;
+      }
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      section {
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 100px 0;
+        background-color: rgb(33, 39, 44);
+      }
+      .container {
+        width: 90%;
+        height: auto;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      header h1 {
+        text-align: center;
+        font-size: 4rem;
+        color: rgb(253, 251, 251);
+        margin-bottom: 15px;
+      }
+      header p {
+        text-align: center;
+        font-size: 2rem;
+        color: rgb(253, 251, 251);
+        margin-bottom: 30px;
+      }
+      form {
+        width: 90%;
+        max-width: 400px;
+        margin: 20px auto;
+        display: flex;
+        justify-content: center;
+      }
+      form input {
+        width: 80%;
+        padding: 10px;
+        border: none;
+        outline: none;
+        font-size: 1rem;
+        /* display: inline-block; */
+      }
+      form #search {
+        padding: 10px;
+        border: none;
+        outline: none;
+        font-size: 1rem;
+        background-color: slategray;
+        color: #fff;
+      }
+      h2 {
+        text-align: center;
+        font-size: 2rem;
+        color: rgb(253, 251, 251);
+      }
+      .search-result {
+        margin-top: 50px;
+        width: 100%;
+        display: grid;
+        gap: 25px;
+        grid-template: auto/ repeat(auto-fit, minmax(300px, 1fr));
+      }
+      .item {
+        width: 100%;
+        border-radius: 10px;
+        background-color: slategray;
+        padding: 15px;
+        overflow: hidden;
+      }
+      .item img {
+        width: 100%;
+        height: 300px;
+        border-radius: 5px;
+      }
+      .item .flex-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .item .title {
+        color: #eee;
+        margin: 20px 10px 0 0;
+        font-size: 1.5rem;
+        font-weight: 400;
+      }
+      .v-button {
+        text-decoration: none;
+        text-align: center;
+        width: 120px;
+        padding: 10px 5px;
+        background-color: #eee;
+        color: #000;
+        font-size: 1rem;
+        margin: 20px;
+        align-self: start;
+      }
+      .item-data {
+        color: #eee;
+        display: block;
+        margin-top: 10px;
+        font-size: 1rem;
+        line-height: 1rem;
+        text-transform: capitalize;
+      }
+    </style>
+  </head>
+  <body>
+    <section>
+      <div class="container">
+        <header>
+          <h1>Recipe Food's</h1>
+          <p>Find Food Recipes From Ingredients</p>
+        </header>
+        <form onsubmit="return false">
+          <input type="text" placeholder="Search Your Recipe..." />
+          <button id="search" onclick="findFoods()">Search</button>
+        </form>
+        <h2>Search Result :</h2>
+        <div class="search-result"></div>
+      </div>
+    </section>
+
+    <script>
+      let keyword = '';
+
+      const appID = '741d0846';
+      const appKey = '575cb687de9ae40007a60837402ae062';
+
+      const divSResult = document.querySelector('.search-result');
+
+      const findFoods = () => {
+        keyword = document.querySelector('input').value;
+        console.log(keyword);
+        fetchAPI();
+      };
+
+      async function fetchAPI() {
+        const response = await fetch(`https://api.edamam.com/search?q=${keyword}&to=15&app_id=${appID}&app_key=${appKey}`);
+        const data = await response.json();
+        getRecipes(data.hits);
+        console.log(data);
+      }
+
+      function getRecipes(dataRecipe) {
+        let listRecipes = '';
+        dataRecipe.map((result) => {
+          listRecipes += `
+          <div class="item">
+            <img src="${result.recipe.image}" alt="" />
+            <div class="flex-container">
+              <h1 class="title">${result.recipe.label}</h1>
+              <a href="${result.recipe.url}" target="_blank" class="v-button">View Recipe</a>
+            </div>
+            <p class="item-data">dish type : ${result.recipe.dishType[0]}</p>
+            <p class="item-data">diet labels : ${result.recipe.dietLabels}</p>
+            <p class="item-data">${result.recipe.cuisineType[0]}</p>
+          </div>
+          `;
+        });
+
+        divSResult.innerHTML = listRecipes;
+      }
+    </script>
+  </body>
+</html>
